@@ -1,10 +1,14 @@
 const express = require("express");
+const passport = require("passport");
 
 //Instantiate Express
 const app = express();
 
 //call Mongoose to connect
 require("./mongo/mongo");
+
+ // Used to initialize passport
+app.use(passport.initialize());
 
 const PORT = process.env.PORT || 5000;
 
@@ -15,8 +19,16 @@ app.listen(PORT, () => {
 
 app.use(express.json());
 
+app.use(function(req, res, next) {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+  next();
+});
+
 //Import User Routes
 const userAuthRoute = require("./routes/auth/userAuth");
+
+
 
 //Home Route
 app.get("/", (req, res) => {

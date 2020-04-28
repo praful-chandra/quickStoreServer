@@ -1,6 +1,10 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const router = express.Router();
+const passport = require("../../passport/passport");
+
+//MiddleWares
+const authMiddleWare = require("../../middlewares/authMiddleWare");
 
 //Models
 const UserModel = mongoose.model("user");
@@ -27,6 +31,7 @@ router.post("/signin", async (req, res) => {
   }
 
   const newUser = new UserModel({
+    provider: "email",
     userName: recived.userName,
     email: recived.email,
     password: recived.password,
@@ -63,18 +68,85 @@ router.post("/login", async (req, res) => {
     return res.status(401).json({ error: "Auth Error" });
   }
 
-  UserModel.getUserByCredentials(recived.email,recived.password)
+  UserModel.getUserByCredentials(recived.email, recived.password)
     .then(async (user) => {
       const token = await user.genToken();
 
-      res.json({
-        user,
-        token,
+      user.save().then((data) => {
+        res.json({
+          user: data,
+          token,
+        });
       });
     })
     .catch((err) => {
       res.status(401).json({ error: "Auth Error" });
     });
+});
+
+router.get(
+  "/google",
+  passport.authenticate("google", {
+    scope: [
+      "https://www.googleapis.com/auth/userinfo.profile",
+      "https://www.googleapis.com/auth/userinfo.email",
+    ],
+  })
+);
+
+router.get(
+  "/googleOAuthCallback",
+  passport.authenticate("google"),
+  async function (req, res) {
+    let user = req.user._json;
+    let existingUser = await UserModel.find({ email: user.email });
+
+    if(existingUser.length > 0){
+      UserModel.findOne({email :user.email})    .then(async (usr) => {
+        const token = await usr.genToken();
+  
+        usr.save().then((data) => {
+          return res.redirect(`${process.env.CLIENT_URL}handleToken/${token}`);
+        });
+      })
+      .catch((err) => {
+        res.status(401).json({ error: "Auth Error" });
+      });
+
+      return;
+    }
+    
+
+    const newUser = new UserModel({
+      provider: "google",
+      userName: user.name,
+      email: user.email,
+      password: null,
+    });
+
+    const token = await newUser.genToken();
+
+    newUser
+      .save()
+      .then((usr) => {
+        return res.redirect(`${process.env.CLIENT_URL}handleToken/${token}`);
+
+        // res.status(201).json({
+        //   user: usr,
+        //   token,
+        // });
+      })
+      .catch((err) => {
+        return res.redirect(`${process.env.CLIENT_URL}`);
+      });
+
+    // console.log(req.user);
+    // res.json(req.user._json);
+  }
+);
+
+router.post("/validateuser", authMiddleWare, (req, res) => {
+  res.json(req.user);
 });
 
 module.exports = router;
