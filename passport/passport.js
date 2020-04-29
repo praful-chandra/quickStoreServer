@@ -4,7 +4,7 @@ const OAuth = require("passport-google-oauth20").Strategy;
 passport.use(new OAuth({
     clientID : process.env.GClientID,
     clientSecret: process.env.GClientSecret,
-    callbackURL:"/auth/user/googleOAuthCallback",
+    callbackURL:"/api/auth/user/googleOAuthCallback",
     proxy:true
 },
 (accessToken,refreshToken,profile,done)=>{

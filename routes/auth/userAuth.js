@@ -27,7 +27,7 @@ router.post("/signin", async (req, res) => {
   let existingUser = await UserModel.find({ email: recived.email });
 
   if (existingUser.length > 0) {
-    return res.status(400).json({ email: "email alredy exists" });
+    return res.status(400).send({ error: "email alredy exists" });
   }
 
   const newUser = new UserModel({

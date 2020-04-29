@@ -38,4 +38,4 @@ app.get("/", (req, res) => {
 });
 
 //AUthentication Routes
-app.use("/auth/user", userAuthRoute);
+app.use("/api/auth/user", userAuthRoute);
