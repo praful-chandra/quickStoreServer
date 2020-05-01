@@ -145,6 +145,16 @@ router.get(
   }
 );
 
+router.post("/logout" ,authMiddleWare ,(req,res)=>{
+  const token  = req.headers.authorization;
+  const user = req.user;
+  let tokens  = user.loggedIn.filter(data=>data.token !== token );
+
+  user.loggedIn = tokens;
+  user.save();
+  res.send();
+})
+
 router.post("/validateuser", authMiddleWare, (req, res) => {
   res.json(req.user);
 });
