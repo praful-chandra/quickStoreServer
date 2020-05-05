@@ -6,6 +6,8 @@ mongoose.connect(MONGO_URI,{useNewUrlParser:true, useUnifiedTopology: true})
 
 //Adding Models
 require("./model/userModel");
+require("./model/itemModel");
+require("./model/categoryModel");
 
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));

@@ -27,7 +27,7 @@ app.use(function(req, res, next) {
 
 //Import User Routes
 const userAuthRoute = require("./routes/auth/userAuth");
-
+const ShopRoute = require("./routes/shop/shopRoutes");
 
 
 //Home Route
@@ -39,3 +39,4 @@ app.get("/", (req, res) => {
 
 //AUthentication Routes
 app.use("/api/auth/user", userAuthRoute);
+app.use("/api/shop",ShopRoute);
