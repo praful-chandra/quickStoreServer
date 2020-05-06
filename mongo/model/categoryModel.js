@@ -1,10 +1,9 @@
 const mongoose = require("mongoose");
 
-const Item = require("./itemModel").item;
 
 const categorySchema = new mongoose.Schema({
-  imageUrl: {
-    type: String,
+  image: {
+    type: Buffer,
     required: true,
   },
   title: {
@@ -13,7 +12,7 @@ const categorySchema = new mongoose.Schema({
   },
   items: [
     {
-      type: Item,
+      type: mongoose.Types.ObjectId,
       required: true,
     },
   ],
